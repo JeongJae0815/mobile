@@ -24,11 +24,11 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(serial_example_node src/serial_example_node.cpp)
+add_executable(mobile_serial_node src/serial_node.cpp)
 add_executable(mobile_inf src/interface.cpp)
 add_executable(mobile_ctrl src/controller.cpp)
 
-target_link_libraries(serial_example_node
+target_link_libraries(mobile_serial_node
   ${catkin_LIBRARIES}
 )
 
