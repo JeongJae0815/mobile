@@ -21,14 +21,14 @@ void keyCallback(const std_msgs::Char msg){
 int main(int argc, char **argv){
 	ros::init(argc, argv, "P3DX_Controller");
 	ros::NodeHandle nh, nKey, nExit;
-	ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("RosAria/cmd_vel", 10);
+	ros::Publisher pub = nh.advertise<std_msgs::String>("RosAria/cmd_vel", 10);
 	ros::Subscriber subKey = nKey.subscribe("keyInput", 100, keyCallback);
-  ros::Subscriber subExit = nExit.subscribe("exitSignal", 10, exitCallback);
+	ros::Subscriber subExit = nExit.subscribe("exitSignal", 10, exitCallback);
 	geometry_msgs::Twist msg;
 	float speed = BASE_SPEED;
 	// Make the robot stop (robot perhaps has a speed already)
-	msg.linear.x = 0;
-	msg.angular.z = 0;
+	
+	msg.data='base speed'
 	pub.publish(msg);
 	ros::spinOnce();
 	
@@ -38,40 +38,32 @@ int main(int argc, char **argv){
 	while(ros::ok() && !bExit){
 		switch(key){
 		case FORWARD_W:
-			msg.linear.x = speed;
-			msg.angular.z = 0;
+			msg.data="forward";
 			pub.publish(msg);
 			break;
 			
 		case LEFT_A:
-      msg.linear.x = speed;
-      msg.angular.z = PI / 6;
+			msg.data="left";
 			pub.publish(msg);
 			break;
 			
 		case BACKWARD_S:
-			msg.linear.x = -1 * speed;
-			msg.angular.z = 0;
+			msg.data="backward";
 			pub.publish(msg);
 			break;
 			
 		case RIGHT_D:
-      msg.linear.x = speed;
-      msg.angular.z = -1 * PI / 6;
+			msg.data="right";
 			pub.publish(msg);
 			break;
 			
 		case COUNTERCLKWISE_Q:
-			msg.linear.x = 0;
-      msg.angular.z = PI / 12;
-      //msg.angular.z = PI / 5;
+			msg.data="count_clock_q";
 			pub.publish(msg);
 			break;
 			
 		case CLKWISE_E:
-			msg.linear.x = 0;
-      msg.angular.z = -1 * PI / 12;
-      //msg.angular.z = -1 * PI / 5;
+			msg.data="count_clock_e";
 			pub.publish(msg);
 			break;
 			
@@ -86,24 +78,22 @@ int main(int argc, char **argv){
 			break;
 
 		case SPEED_3:
-      speed = BASE_SPEED * 1.5;
+	  	        speed = BASE_SPEED * 1.5;
 			key = buffer;
 			break;
 
 		case SPEED_4:
-      speed = BASE_SPEED * 2;
+	  	        speed = BASE_SPEED * 2;
 			key = buffer;
 			break;
 
 		case SPEED_5:
-      speed = BASE_SPEED * 2.5;
+		        speed = BASE_SPEED * 2.5;
 			key = buffer;
 			break;
 
 		case STOP_SPACE:
-		default:
-			msg.linear.x = 0;
-			msg.angular.z = 0;
+			msg.data="stop space";
 			pub.publish(msg);
 			break;
 		}
