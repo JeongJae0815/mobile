@@ -2,11 +2,10 @@
 <package>
   <name>mobile</name>
   <version>0.0.0</version>
-  <description>Example package for using http://wjwwood.io/serial/ library</description>
+  <description>this code based on Example package for using http://wjwwood.io/serial/ library and p3dx packages from Sangmin Ahn and serial-example from garyservin </description>
 
-  <author email="garyservin@gmail.com">Gary Servin</author>
-
-  <maintainer email="garyservin@gmail.com">Gary Servin</maintainer>
+  <author email="jeongjae0815@gmail.com">Jeongjae Park</author>
+  <maintainer email="jeongjae0815@gmail.com">Jeongjae Park</maintainer>
 
   <license>BSD</license>
 

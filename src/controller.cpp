@@ -21,14 +21,14 @@ void keyCallback(const std_msgs::Char msg){
 int main(int argc, char **argv){
 	ros::init(argc, argv, "P3DX_Controller");
 	ros::NodeHandle nh, nKey, nExit;
-	ros::Publisher pub = nh.advertise<std_msgs::String>("RosAria/cmd_vel", 10);
+	ros::Publisher pub = nh.advertise<std_msgs::String>("/mobile/write", 10);
 	ros::Subscriber subKey = nKey.subscribe("keyInput", 100, keyCallback);
 	ros::Subscriber subExit = nExit.subscribe("exitSignal", 10, exitCallback);
-	geometry_msgs::Twist msg;
+	std_msgs::String msg;
 	float speed = BASE_SPEED;
 	// Make the robot stop (robot perhaps has a speed already)
 	
-	msg.data='base speed'
+	msg.data="base speed";
 	pub.publish(msg);
 	ros::spinOnce();
 	
@@ -68,27 +68,27 @@ int main(int argc, char **argv){
 			break;
 			
 		case SPEED_1:
-			speed = BASE_SPEED * 0.5;
+			//speed = BASE_SPEED * 0.5;
 			key = buffer;
 			break;
 
 		case SPEED_2:
-			speed = BASE_SPEED;
+			//speed = BASE_SPEED;
 			key = buffer;
 			break;
 
 		case SPEED_3:
-	  	        speed = BASE_SPEED * 1.5;
+	  	        //speed = BASE_SPEED * 1.5;
 			key = buffer;
 			break;
 
 		case SPEED_4:
-	  	        speed = BASE_SPEED * 2;
+	  	        //speed = BASE_SPEED * 2;
 			key = buffer;
 			break;
 
 		case SPEED_5:
-		        speed = BASE_SPEED * 2.5;
+		        //speed = BASE_SPEED * 2.5;
 			key = buffer;
 			break;
 

@@ -8,6 +8,7 @@
 #include <std_msgs/Char.h>
 #include <std_msgs/Bool.h>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/String.h>
 
 #define FORWARD_W 0x77
 #define LEFT_A 0x61

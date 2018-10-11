@@ -20,7 +20,7 @@
 #include <serial/serial.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Empty.h>
-#include <geometry_msgs/Twist.h>
+
 serial::Serial ser;
 
 void write_callback(const std_msgs::String::ConstPtr& msg){
@@ -33,8 +33,8 @@ int main (int argc, char** argv){
     ros::init(argc, argv, "serial_example_node");
     ros::NodeHandle nh;
 
-    ros::Subscriber write_sub = nh.subscribe("/RosAria/cmd_vel", 1000, write_callback);
-    ros::Publisher read_pub = nh.advertise<std_msgs::String>("read", 1000);
+    ros::Subscriber write_sub = nh.subscribe("/mobile/write", 1000, write_callback);
+    ros::Publisher read_pub = nh.advertise<std_msgs::String>("/mobile/read", 1000);
 
     try
     {
