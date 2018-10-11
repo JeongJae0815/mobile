@@ -1,0 +1,9 @@
+<launch>
+
+	<node pkg = "p3dx" type = "p3dx_ctrl" name = "P3DX_Controller"/>
+	<node pkg = "rosaria" type = "RosAria" name = "RosAria" output="screen">
+		<param name="port" value="/dev/ttyUSB0" type="string"/>
+	</node>
+	<node pkg = "p3dx" type = "p3dx_inf" name = "P3DX_User_Interface" output="screen" launch-prefix="xterm -e"/>
+
+</launch>

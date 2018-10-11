@@ -1,0 +1,7 @@
+<launch>
+
+	<node pkg = "p3dx" type = "p3dx_ctrl" name = "P3DX_Controller"/>
+
+	<node pkg = "p3dx" type = "p3dx_inf" name = "P3DX_User_Interface" output="screen" launch-prefix="xterm -e"/>
+
+</launch>
