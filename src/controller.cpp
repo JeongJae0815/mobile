@@ -1,5 +1,7 @@
 #include <p3dx.h>
-//it is modified by pycharm
+#include <iostream>
+#include <stdio.h>
+#include <boost/format.hpp>
 bool bExit;
 char key, buffer;
 
@@ -28,78 +30,95 @@ int main(int argc, char **argv){
 	float speed = BASE_SPEED;
 	// Make the robot stop (robot perhaps has a speed already)
 	
-	msg.data="base speed";
+	msg.data="PIE";
 	pub.publish(msg);
 	ros::spinOnce();
-	
+	std::string data;
+	data=(boost::format("PV%d,%dE") % (100) %(0)).str();
+
+	int linear_velocity=100;
+	int angular_velocity=20;
 	bExit = false;
 	key = STOP_SPACE;
-
 	while(ros::ok() && !bExit){
 		switch(key){
 		case FORWARD_W:
-			msg.data="forward";
+			data=(boost::format("PV%d,%dE") % (linear_velocity) %(0)).str();
+			msg.data=data;
 			pub.publish(msg);
 			break;
 			
 		case LEFT_A:
-			msg.data="left";
+			data=(boost::format("PV%d,%dE") % (linear_velocity) %(angular_velocity)).str();
+			msg.data=data;
 			pub.publish(msg);
 			break;
 			
 		case BACKWARD_S:
-			msg.data="backward";
+			data=(boost::format("PV-%d,%dE") % (linear_velocity) %(0)).str();
+			msg.data=data;
 			pub.publish(msg);
 			break;
 			
 		case RIGHT_D:
-			msg.data="right";
+			data=(boost::format("PV%d,-%dE") % (linear_velocity) %(angular_velocity)).str();
+			msg.data=data;
 			pub.publish(msg);
 			break;
 			
 		case COUNTERCLKWISE_Q:
-			msg.data="count_clock_q";
+			data=(boost::format("PV%d,%dE") % (0) %(angular_velocity)).str();
+			msg.data=data;
 			pub.publish(msg);
 			break;
 			
 		case CLKWISE_E:
-			msg.data="count_clock_e";
+			data=(boost::format("PV%d,-%dE") % (0) %(angular_velocity)).str();
+			msg.data=data;
 			pub.publish(msg);
 			break;
 			
 		case SPEED_1:
-			//speed = BASE_SPEED * 0.5;
+			linear_velocity=100;
+			angular_velocity=10;
 			key = buffer;
 			break;
 
 		case SPEED_2:
-			//speed = BASE_SPEED;
+			linear_velocity=200;
+			angular_velocity=20;
 			key = buffer;
 			break;
 
 		case SPEED_3:
-	  	        //speed = BASE_SPEED * 1.5;
+			linear_velocity=300;
+			angular_velocity=30;
+
 			key = buffer;
 			break;
 
 		case SPEED_4:
-	  	        //speed = BASE_SPEED * 2;
+			linear_velocity=400;
+			angular_velocity=40;
+
 			key = buffer;
 			break;
 
 		case SPEED_5:
-		        //speed = BASE_SPEED * 2.5;
+			linear_velocity=500;
+			angular_velocity=50;
+
 			key = buffer;
 			break;
 
 		case STOP_SPACE:
-			msg.data="stop space";
+			msg.data="PV0,0E";
 			pub.publish(msg);
 			break;
 		}
 		
 		ros::spinOnce();
-		ros::Rate(20).sleep();
+		ros::Rate(100).sleep();
 	}
 
   //system("rosnode kill -a");

@@ -15,12 +15,14 @@
   <build_depend>geometry_msgs</build_depend>
   <build_depend>rosaria</build_depend>
   <build_depend>rospy</build_depend>
+  <build_depend>filter_base</build_depend>
 
   <run_depend>serial</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>rosaria</run_depend>
   <run_depend>rospy</run_depend>
+  <run_depend>filter_base</run_depend>
 
 </package>
 

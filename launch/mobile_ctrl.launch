@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="mobile" type="mobile_serial_node"   name="mobile_serial_node1" output="screen">
+  </node>
+    <node pkg="mobile" type="mobile_ctrl"   name="mobile_ctrl1">
+  </node>
+  <node pkg="mobile" type="mobile_inf"   name="mobile_inf1" output="screen" launch-prefix="xterm -e">
+  </node>
+</launch>
+
