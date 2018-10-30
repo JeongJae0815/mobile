@@ -1,4 +1,4 @@
-/***
+*******
  * This example expects the serial port has a loopback on it.
  *
  * Alternatively, you could use an Arduino:
@@ -24,11 +24,41 @@
 serial::Serial ser;
 
 void write_callback(const std_msgs::String::ConstPtr& msg){
-    ROS_INFO_STREAM("Writing to serial port" << msg->data);
+//    ROS_INFO_STREAM("Writing to serial port" << msg->data);
     ser.write(msg->data);
 }
+void write_buffer(const std_msgs::String msg){
+    static unsigned char r_pkt[20];
+    static int r_pkt_idx=0;
+    int i;
+    unsigned long len=msg.data.size();   
+    unsigned char battery_level;
+    if (msg.data[len-1]==(char)'E'){
+       // ROS_INFO("%lu",msg.data.size()); 
+        
+        for (i=0;i<len;i++){
+            r_pkt[r_pkt_idx]=msg.data[i];
+            r_pkt_idx++;
+        }
+        long travel_distance_right_wheel,travel_distance_left_wheel;
+        unsigned long temp;
 
-
+        if(r_pkt_idx==12){
+            travel_distance_right_wheel=0;
+            for(i=0;i<4;i++){
+                temp=r_pkt[i+1];
+                travel_distance_right_wheel |=temp<<((3-i)*8);
+            } 
+            travel_distance_left_wheel=0;
+            for(i=0;i<4;i++){
+                temp=r_pkt[i+5];
+                travel_distance_left_wheel |=temp<<((3-i)*8);
+            } 
+            battery_level=r_pkt[10];
+            ROS_INFO("dist_r : %8d, dist_l : %8d, Battery : %3d", travel_distance_right_wheel,travel_distance_left_wheel,battery_level); 
+        }
+    }
+} 
 int main (int argc, char** argv){
     ros::init(argc, argv, "serial_example_node");
     ros::NodeHandle nh;
@@ -55,17 +85,19 @@ int main (int argc, char** argv){
     }else{
         return -1;
     }
-
     ros::Rate loop_rate(20);
     while(ros::ok()){
 
         ros::spinOnce();
 
         if(ser.available()){
-            ROS_INFO_STREAM("Reading from serial port");
+//            ROS_INFO_STREAM("Reading from serial port");
             std_msgs::String result;
             result.data = ser.read(ser.available());
-            ROS_INFO_STREAM("Read: " << result.data);
+//            ROS_INFO_STREAM("Read: " << result.data);
+            //ROS_INFO("%lu",result.data.size());
+              write_buffer(result);
+//            ROS_INFO("%lu",result.data[1,2,3,4]);
             read_pub.publish(result);
         }
         loop_rate.sleep();
