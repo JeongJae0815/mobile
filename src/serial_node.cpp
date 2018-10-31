@@ -21,6 +21,7 @@
 #include <std_msgs/String.h>
 #include <std_msgs/Empty.h>
 #include <math.h>
+#include <geometry_msgs/PointStamped.h>
 serial::Serial ser;
 
 void write_callback(const std_msgs::String::ConstPtr& msg){
@@ -69,18 +70,18 @@ int write_buffer(const std_msgs::String msg){
             }
             tmp=current_distance_right_wheel;
             current_distance_left_wheel=tmp_left-travel_distance_left_wheel;
-            //ROS_INFO("dist_r : %8d, dist_l : %8d, Battery : %3d",current_distance_right_wheel,current_distance_left_wheel,battery_level);
+            ROS_INFO("dist_r : %8d, dist_l : %8d, Battery : %3d",current_distance_right_wheel,current_distance_left_wheel,battery_level);
             r_pkt_idx=0;
             dist=(current_distance_left_wheel+current_distance_right_wheel)/2;
             //ROS_INFO("%d",dist);
             if(tmp_dist){
                diff_dist=dist-tmp_dist; 
                tmp_dist=dist;
-               ROS_INFO("diff= %d",diff_dist);
+               //ROS_INFO("diff= %d",diff_dist);
                odo_tmp+=diff_dist;
                if (abs(odo_tmp)>500){
                    odo_tmp=1;
-                   ROS_INFO("odotmp = %d",odo_tmp);
+                  // ROS_INFO("odotmp = %d",odo_tmp);
                    return odo_tmp;
                }
             }
@@ -105,7 +106,7 @@ int main (int argc, char** argv){
     
     ros::Subscriber write_sub = nh.subscribe("/mobile/write", 1000, write_callback);
     ros::Publisher read_pub = nh.advertise<std_msgs::String>("/mobile/read", 1000);
-    ros::Publisher odo_flag_pub = nh.advertise<std_msgs::String>("/odo_flag", 1000);
+    ros::Publisher odo_flag_pub = nh.advertise<geometry_msgs::PointStamped>("/odo_flag", 1000);
     try
     {
         ser.setPort("/dev/ttyUSB0");
@@ -132,9 +133,10 @@ int main (int argc, char** argv){
 
         if(ser.available()){
             std_msgs::String result;
+            geometry_msgs::PointStamped odo_flag_result;
             result.data = ser.read(ser.available());
             odo_flag=write_buffer(result);
-            if(odo_flag) odo_flag_pub.publish(result); 
+            if(odo_flag) odo_flag_pub.publish(odo_flag_result); 
             read_pub.publish(result);
         }
         loop_rate.sleep();
