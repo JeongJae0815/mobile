@@ -22,6 +22,7 @@
 #include <std_msgs/Empty.h>
 #include <math.h>
 #include <geometry_msgs/PointStamped.h>
+#define ODO_DIST 200
 serial::Serial ser;
 
 void write_callback(const std_msgs::String::ConstPtr& msg){
@@ -70,7 +71,7 @@ int write_buffer(const std_msgs::String msg){
             }
             tmp=current_distance_right_wheel;
             current_distance_left_wheel=tmp_left-travel_distance_left_wheel;
-            ROS_INFO("dist_r : %8d, dist_l : %8d, Battery : %3d",current_distance_right_wheel,current_distance_left_wheel,battery_level);
+            ROS_INFO("dist_r : %8ld, dist_l : %ld, Battery : %3d",current_distance_right_wheel,current_distance_left_wheel,battery_level);
             r_pkt_idx=0;
             dist=(current_distance_left_wheel+current_distance_right_wheel)/2;
             //ROS_INFO("%d",dist);
@@ -79,7 +80,7 @@ int write_buffer(const std_msgs::String msg){
                tmp_dist=dist;
                //ROS_INFO("diff= %d",diff_dist);
                odo_tmp+=diff_dist;
-               if (abs(odo_tmp)>500){
+               if (abs(odo_tmp)>ODO_DIST){
                    odo_tmp=1;
                   // ROS_INFO("odotmp = %d",odo_tmp);
                    return odo_tmp;
