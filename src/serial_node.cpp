@@ -31,7 +31,7 @@ struct Odometry{
     char odo_flag;
 };
 int cal_diff(unsigned long current, unsigned long past){
-    long diff=current-past;
+    long long diff=(long long)current-(long long)past;
     if(abs(diff)>=1000){
         if(diff>0){
             return MAX_DIST-diff;
@@ -85,11 +85,12 @@ int write_buffer(const std_msgs::String msg){
             int diff_right=0;
             int diff_left=0;
             diff_right=cal_diff(travel_distance_right_wheel,tmp_right);
-            tmp_right=travel_distance_right_wheel
-
-            ROS_INFO("dist_r : %8ld, dist_l : %8ld, Battery : %3d",MAX_DIST,diff_right,battery_level);
+            diff_left=cal_diff(travel_distance_left_wheel,tmp_left);
+            tmp_right=travel_distance_right_wheel;
+            tmp_left=travel_distance_left_wheel;
+            ROS_INFO("dist_r : %8lu, dist_l : %8d, Battery : %3d",travel_distance_right_wheel,diff_right,battery_level);
             r_pkt_idx=0;
-            dist=(current_distance_left_wheel+current_distance_right_wheel)/2;
+            dist=(diff_right+diff_left)/2;
             //ROS_INFO("%d",dist);
             if(tmp_dist){
                diff_dist=dist-tmp_dist; 
