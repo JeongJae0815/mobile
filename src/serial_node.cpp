@@ -22,7 +22,7 @@
 #include <std_msgs/Empty.h>
 #include <math.h>
 #include <geometry_msgs/PointStamped.h>
-#include <climits>
+#define MAX_DIST=0xFFFFFFFF
 #define ODO_DIST 200
 serial::Serial ser;
 struct Odometry{
@@ -72,7 +72,7 @@ int write_buffer(const std_msgs::String msg){
             current_distance_right_wheel=-(tmp_right-travel_distance_right_wheel);
             current_distance_left_wheel=-(tmp_left-travel_distance_left_wheel);
 
-            ROS_INFO("dist_r : %8ld, dist_l : %8ld, Battery : %3d",ULONG_MAX,ULONG_MAX+1,battery_level);
+            ROS_INFO("dist_r : %8ld, dist_l : %8ld, Battery : %3d",MAX_DIST,travel_distance_left_wheel,battery_level);
             r_pkt_idx=0;
             dist=(current_distance_left_wheel+current_distance_right_wheel)/2;
             //ROS_INFO("%d",dist);
@@ -109,7 +109,7 @@ int main (int argc, char** argv){
     ros::Subscriber write_sub = nh.subscribe("/mobile/write", 1000, write_callback);
     ros::Publisher read_pub = nh.advertise<std_msgs::String>("/mobile/read", 1000);
     ros::Publisher odo_flag_pub = nh.advertise<geometry_msgs::PointStamped>("/odo_flag", 1000);
-    ros::Publisher odo_flag_pub = nh.advertise<geometry_msgs::PointStamped>("/odo_dist", 1000);
+    ros::Publisher odo_dist_pub = nh.advertise<geometry_msgs::PointStamped>("/odo_dist", 1000);
     try
     {
         ser.setPort("/dev/ttyUSB0");
