@@ -47,6 +47,7 @@ ODOMETRY write_buffer(const std_msgs::String msg){
     int diff_dist=0;
     static int tmp_dist=0;
     static int odo_tmp=0;
+    ODOMETRY odo;
     //ROS_INFO("length = %lu",len);
     if (msg.data[len-1]==(char)'E'){
         for (i=0;i<len;i++){
@@ -73,7 +74,6 @@ ODOMETRY write_buffer(const std_msgs::String msg){
             static long tmp=0;
             int diff_right=0;
             int diff_left=0;
-            ODOMETRY odo;
             diff_right=cal_diff(travel_distance_right_wheel,tmp_right);
             diff_left=cal_diff(travel_distance_left_wheel,tmp_left);
             tmp_right=travel_distance_right_wheel;
@@ -147,9 +147,13 @@ int main (int argc, char** argv){
         if(ser.available()){
             std_msgs::String result;
             geometry_msgs::PointStamped odo_flag_result;
+            geometry_msgs::PointStamped odo_dist_result;
             result.data = ser.read(ser.available());
-            odo.odo_flag=write_buffer(result);
-            if(odo_flag) odo_flag_pub.publish(odo_flag_result);
+            odo=write_buffer(result);
+            odo_dist_result.x=odo.left_wheel;
+            odo_dist_result.y=odo.right_wheel;
+            odo_dist_pub.publish(odo_dist_result);
+            if(odo.odo_flag) odo_flag_pub.publish(odo_flag_result);
             read_pub.publish(result);
         }
         loop_rate.sleep();
