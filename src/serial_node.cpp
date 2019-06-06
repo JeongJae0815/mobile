@@ -22,7 +22,7 @@
 #include <std_msgs/Empty.h>
 #include <math.h>
 #include <geometry_msgs/PointStamped.h>
-#define MAX_DIST=0xFFFFFFFF
+#define MAX_DIST 4294967295
 #define ODO_DIST 200
 serial::Serial ser;
 struct Odometry{
@@ -30,6 +30,20 @@ struct Odometry{
     double left_wheel;
     char odo_flag;
 };
+int cal_diff(unsigned long current, unsigned long past){
+    long diff=current-past;
+    if(abs(diff)>=1000){
+        if(diff>0){
+            return MAX_DIST-diff;
+        }
+        else{
+            return diff-MAX_DIST;
+        }
+    }
+    else{
+        return diff;
+    }
+}
 void write_callback(const std_msgs::String::ConstPtr& msg){
 //    ROS_INFO_STREAM("Writing to serial port" << msg->data);
     ser.write(msg->data);
@@ -65,14 +79,15 @@ int write_buffer(const std_msgs::String msg){
                 travel_distance_left_wheel |=temp<<((3-i)*8);
             } 
             battery_level=r_pkt[10];
-            static long tmp_right=travel_distance_right_wheel; 
+            static long tmp_right=travel_distance_right_wheel;
             static long tmp_left=travel_distance_left_wheel;
             static long tmp=0;
-            long current_distance_right_wheel, current_distance_left_wheel;
-            current_distance_right_wheel=-(tmp_right-travel_distance_right_wheel);
-            current_distance_left_wheel=-(tmp_left-travel_distance_left_wheel);
+            int diff_right=0;
+            int diff_left=0;
+            diff_right=cal_diff(travel_distance_right_wheel,tmp_right);
+            tmp_right=travel_distance_right_wheel
 
-            ROS_INFO("dist_r : %8ld, dist_l : %8ld, Battery : %3d",MAX_DIST,travel_distance_left_wheel,battery_level);
+            ROS_INFO("dist_r : %8ld, dist_l : %8ld, Battery : %3d",MAX_DIST,diff_right,battery_level);
             r_pkt_idx=0;
             dist=(current_distance_left_wheel+current_distance_right_wheel)/2;
             //ROS_INFO("%d",dist);
