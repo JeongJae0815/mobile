@@ -29,6 +29,7 @@ typedef struct odometry{
     double left_wheel;
     char odo_flag;
     ros::Time time;
+    int seq;
 }ODOMETRY;
 int cal_diff(unsigned long current, unsigned long past){
     long long diff=(long long)current-(long long)past;
@@ -39,6 +40,7 @@ void write_callback(const std_msgs::String::ConstPtr& msg){
     ser.write(msg->data);
 }
 ODOMETRY write_buffer(const std_msgs::String msg){
+    static int seq=0;
     static unsigned char r_pkt[20];
     static int r_pkt_idx=0;
     int i;
@@ -83,6 +85,8 @@ ODOMETRY write_buffer(const std_msgs::String msg){
             odo.right_wheel=diff_right;
             odo.left_wheel=diff_left;
             odo.time=ros::Time::now();
+            seq+=1;
+            odo.seq=seq;
             r_pkt_idx=0;
             dist=(diff_right+diff_left)/2;
             //ROS_INFO("%d",dist);
@@ -154,6 +158,7 @@ int main (int argc, char** argv){
             odo=write_buffer(result);
             odo_dist_result.point.x=odo.left_wheel;
             odo_dist_result.point.y=odo.right_wheel;
+            odo_dist_result.point.z=odo.seq;
             odo_dist_result.header.stamp=odo.time;
             odo_dist_pub.publish(odo_dist_result);
             if(odo.odo_flag) odo_flag_pub.publish(odo_flag_result);
