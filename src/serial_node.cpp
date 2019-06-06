@@ -24,7 +24,10 @@
 #include <geometry_msgs/PointStamped.h>
 #define ODO_DIST 200
 serial::Serial ser;
-
+struct Odometry{
+    double right_wheel;
+    double left_wheel;
+};
 void write_callback(const std_msgs::String::ConstPtr& msg){
 //    ROS_INFO_STREAM("Writing to serial port" << msg->data);
     ser.write(msg->data);
@@ -64,13 +67,10 @@ int write_buffer(const std_msgs::String msg){
             static long tmp_left=travel_distance_left_wheel;
             static long tmp=0;
             long current_distance_right_wheel, current_distance_left_wheel;
-            current_distance_right_wheel=(tmp_right-travel_distance_right_wheel);
-            if (abs(tmp-current_distance_right_wheel)==1) {
-                tmp_right-=1;
-                current_distance_right_wheel-=1;   
-            }
-            tmp=current_distance_right_wheel;
-            current_distance_left_wheel=tmp_left-travel_distance_left_wheel;
+#current_distance_right_wheel=(tmp_right-travel_distance_right_wheel);
+#current_distance_left_wheel=tmp_left-travel_distance_left_wheel;
+            current_distance_right_wheel=travel_distance_right_wheel;
+            current_distance_left_wheel=travel_distance_left_wheel;
             ROS_INFO("dist_r : %8ld, dist_l : %ld, Battery : %3d",current_distance_right_wheel,current_distance_left_wheel,battery_level);
             r_pkt_idx=0;
             dist=(current_distance_left_wheel+current_distance_right_wheel)/2;
