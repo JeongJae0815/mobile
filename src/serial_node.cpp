@@ -22,33 +22,22 @@
 #include <std_msgs/Empty.h>
 #include <math.h>
 #include <geometry_msgs/PointStamped.h>
-#define MAX_DIST 4294967295
 #define ODO_DIST 200
 serial::Serial ser;
-struct Odometry{
+typedef struct odometry{
     double right_wheel;
     double left_wheel;
     char odo_flag;
-};
+}ODOMETRY;
 int cal_diff(unsigned long current, unsigned long past){
     long long diff=(long long)current-(long long)past;
-    if(abs(diff)>=1000){
-        if(diff>0){
-            return MAX_DIST-diff;
-        }
-        else{
-            return diff-MAX_DIST;
-        }
-    }
-    else{
-        return diff;
-    }
+    return diff;
 }
 void write_callback(const std_msgs::String::ConstPtr& msg){
 //    ROS_INFO_STREAM("Writing to serial port" << msg->data);
     ser.write(msg->data);
 }
-int write_buffer(const std_msgs::String msg){
+ODOMETRY write_buffer(const std_msgs::String msg){
     static unsigned char r_pkt[20];
     static int r_pkt_idx=0;
     int i;
@@ -84,11 +73,14 @@ int write_buffer(const std_msgs::String msg){
             static long tmp=0;
             int diff_right=0;
             int diff_left=0;
+            ODOMETRY odo;
             diff_right=cal_diff(travel_distance_right_wheel,tmp_right);
             diff_left=cal_diff(travel_distance_left_wheel,tmp_left);
             tmp_right=travel_distance_right_wheel;
             tmp_left=travel_distance_left_wheel;
             ROS_INFO("dist_r : %8lu, dist_l : %8d, Battery : %3d",travel_distance_right_wheel,diff_right,battery_level);
+            odo.right_wheel=diff_right;
+            odo.left_wheel=diff_left;
             r_pkt_idx=0;
             dist=(diff_right+diff_left)/2;
             //ROS_INFO("%d",dist);
@@ -98,9 +90,9 @@ int write_buffer(const std_msgs::String msg){
                //ROS_INFO("diff= %d",diff_dist);
                odo_tmp+=diff_dist;
                if (abs(odo_tmp)>ODO_DIST){
-                   odo_tmp=1;
+                   odo.odo_flag=1;
                   // ROS_INFO("odotmp = %d",odo_tmp);
-                   return odo_tmp;
+                   return odo;
                }
             }
             else tmp_dist=dist;
@@ -109,6 +101,9 @@ int write_buffer(const std_msgs::String msg){
         else{
             r_pkt_idx=0;
         }
+        odo.odo_flag=0;
+        return odo;
+
     }
     else{
         for(i=0;i<len;i++){
@@ -116,7 +111,6 @@ int write_buffer(const std_msgs::String msg){
             r_pkt_idx++;
         }
     }
-    return 0; 
 } 
 int main (int argc, char** argv){
     ros::init(argc, argv, "serial_example_node");
@@ -147,15 +141,15 @@ int main (int argc, char** argv){
     }
     ros::Rate loop_rate(20);
     while(ros::ok()){
-        int odo_flag;
+        ODOMETRY odo;
         ros::spinOnce();
 
         if(ser.available()){
             std_msgs::String result;
             geometry_msgs::PointStamped odo_flag_result;
             result.data = ser.read(ser.available());
-            odo_flag=write_buffer(result);
-            if(odo_flag) odo_flag_pub.publish(odo_flag_result); 
+            odo.odo_flag=write_buffer(result);
+            if(odo_flag) odo_flag_pub.publish(odo_flag_result);
             read_pub.publish(result);
         }
         loop_rate.sleep();
